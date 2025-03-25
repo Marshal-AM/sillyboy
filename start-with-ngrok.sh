@@ -145,7 +145,7 @@ else
         NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4 | head -1)
         if [ -n "$NGROK_URL" ]; then
             echo "🌍 ngrok tunnel URL: $NGROK_URL"
-            echo "📝 API endpoint for Postman: $NGROK_URL/api/ollama-proxy/generate"
+            echo "📝 API endpoint for Postman: $NGROK_URL/api/ollama-proxy/generate-with-character"
         else
             echo "⚠️ Could not get ngrok URL. Is ngrok running properly?"
         fi
@@ -154,7 +154,7 @@ else
         NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | grep -o '"public_url":"[^"]*' | cut -d'"' -f4 | head -1)
         if [ -n "$NGROK_URL" ]; then
             echo "🌍 ngrok tunnel already running at: $NGROK_URL"
-            echo "📝 API endpoint for Postman: $NGROK_URL/api/ollama-proxy/generate"
+            echo "📝 API endpoint for Postman: $NGROK_URL/api/ollama-proxy/generate-with-character"
         else
             echo "⚠️ ngrok is running but could not get URL"
         fi
