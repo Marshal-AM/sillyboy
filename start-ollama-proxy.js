@@ -9,8 +9,39 @@ const __dirname = dirname(__filename);
 
 // Configuration settings
 const OLLAMA_URL = 'http://127.0.0.1:11434';
-const DEFAULT_MODEL = 'llama3'; // Change to your preferred model
+const DEFAULT_MODEL = 'mario:latest'; // Updated to match your available model
 const SERVER_PORT = 8000;
+const DATA_DIR = join(__dirname, 'data'); // Define the data directory path
+
+// Create necessary directories
+function ensureDirectoriesExist() {
+  // Create main data directory if it doesn't exist
+  if (!fs.existsSync(DATA_DIR)) {
+    console.log('📁 Creating data directory...');
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  
+  // Create other required subdirectories
+  const requiredDirs = [
+    join(DATA_DIR, 'user'),
+    join(DATA_DIR, 'avatars'),
+    join(DATA_DIR, 'backgrounds'),
+    join(DATA_DIR, 'characters'),
+    join(DATA_DIR, 'chats'),
+    join(DATA_DIR, 'groups'),
+    join(DATA_DIR, 'world_info'),
+    join(DATA_DIR, 'themes')
+  ];
+  
+  for (const dir of requiredDirs) {
+    if (!fs.existsSync(dir)) {
+      console.log(`📁 Creating directory: ${dir}`);
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  }
+  
+  console.log('✅ Data directories verified');
+}
 
 // First, check if Ollama is running
 async function checkOllamaRunning() {
@@ -145,6 +176,9 @@ function updateServerConfig() {
 async function main() {
   console.log('🚀 Starting SillyTavern with Ollama integration...');
   
+  // Ensure the data directory exists
+  ensureDirectoriesExist();
+  
   const ollamaRunning = await checkOllamaRunning();
   if (!ollamaRunning) {
     console.error('❌ Please start Ollama before running this script');
@@ -157,17 +191,23 @@ async function main() {
   // Update server configuration
   updateServerConfig();
   
+  // Update the example with your actual available model
+  const exampleModel = DEFAULT_MODEL;
+  
   console.log(`✅ Configuration complete! Starting SillyTavern on port ${SERVER_PORT}...`);
   console.log(`📝 API endpoint for Postman: http://localhost:${SERVER_PORT}/api/ollama-proxy/generate`);
   console.log('📌 Example POST request body:');
   console.log(JSON.stringify({
-    model: DEFAULT_MODEL,
+    model: exampleModel,
     prompt: "What is the capital of France?",
     stream: false
   }, null, 2));
   
-  // Start the server
-  const serverProcess = exec('node server.js', (error, stdout, stderr) => {
+  // Start the server with the explicit data root path
+  const serverCmd = `node server.js --dataRoot="${DATA_DIR}"`;
+  console.log(`🖥️ Running command: ${serverCmd}`);
+  
+  const serverProcess = exec(serverCmd, (error, stdout, stderr) => {
     if (error) {
       console.error(`Error: ${error.message}`);
       return;
